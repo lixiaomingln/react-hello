@@ -1,7 +1,10 @@
-import React /*, { useState }*/ from 'react'
 import './App.css'
-import { BrowserRouter as Router, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AppRoutes from './routes';
+import { Avatar, Dropdown, Layout, Menu } from 'antd';
+import { UserOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from 'react';
+import { useGlobalState } from './state/GlobalStateContext';
 
 /**
  * App.tsx 是 react 应用的主组件，包含
@@ -10,54 +13,72 @@ import AppRoutes from './routes';
  * 3. 应用的主要 UI 逻辑
  */
 
-// function App() {
-//   const [count, setCount] = useState(0)
+const { Header, Content, Footer } = Layout;
 
-//   return (
-//     <>
-//       <div>
-//         <a href="https://vite.dev" target="_blank">
-//           <img src={viteLogo} className="logo" alt="Vite logo" />
-//         </a>
-//         <a href="https://react.dev" target="_blank">
-//           <img src={reactLogo} className="logo react" alt="React logo" />
-//         </a>
-//       </div>
-//       <h1>Vite + React</h1>
-//       <div className="card">
-//         <button onClick={() => setCount((count) => count + 1)}>
-//           count is {count}
-//         </button>
-//         <p>
-//           Edit <code>src/App.tsx</code> and save to test HMR
-//         </p>
-//       </div>
-//       <p className="read-the-docs">
-//         Click on the Vite and React logos to learn more
-//       </p>
-//     </>
-//   )
-// }
+const menuItems = [
+  { label: "Admin Page", key: "/admin" },
+  { label: "Teacher Page", key: "/teacher" },
+  { label: "Student Page", key: "/student" }
+];
+
+const userMenu = (
+  <Menu
+    items={[{ key: "logout", label: "Logout" }]}
+  />
+);
 
 const App: React.FC = () => {
+  const navigate = useNavigate();
+  const [selectedMenuItem, setSelectedMenuItem] = useState<string>('');
+  const { dispatch } = useGlobalState();
+
+  useEffect(() => {
+    // 模拟 API 请求
+    // 存放数据到 state 
+    setTimeout(() => {
+      dispatch({
+        type: 'SET_CATEGORY_OPTIONS',
+        payload: [
+          { value: 'news', label: 'News' },
+          { value: 'book', label: 'Books' },
+        ],
+      });
+    }, 1000);
+  }, [dispatch]);
+
+  const menuClick = (e: any) => {
+    setSelectedMenuItem(e.key);
+    navigate(e.key);
+  };
+
   return (
-    <Router>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/admin">Admin</Link>
-          </li>
-          <li>
-            <Link to="/teacher">Teacher</Link>
-          </li>
-          <li>
-            <Link to="/student">Student</Link>
-          </li>
-        </ul>
-      </nav>
-      <AppRoutes />
-    </Router>
-  )
-}
+    <Layout className='shopping-web-container'>
+      <Header className='layout-header'>
+        <div className='logo'>$hopping</div>
+        <Menu
+          onClick={menuClick}
+          mode="horizontal"
+          className='menu'
+          items={menuItems}
+          selectedKeys={[selectedMenuItem]} />
+        <div className="user-info">
+          <span className="login-text">Login as Admin</span>
+          <Dropdown overlay={userMenu} placement="bottomRight" trigger={["hover"]}>
+            <div className="avatar">
+              <Avatar icon={<UserOutlined />} />
+              <span className='user-name'>User Name</span>
+            </div>
+          </Dropdown>
+        </div>
+      </Header>
+
+      <Content className='layout-body'>
+        <AppRoutes />
+      </Content>
+
+      <Footer className='layout-footer'>©2025 Created by CPA</Footer>
+    </Layout>
+  );
+};
 
 export default App

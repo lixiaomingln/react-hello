@@ -5,7 +5,9 @@ import { createRoot } from 'react-dom/client'
 import './index.scss'
 
 import App from './App.tsx'
-// import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
+import { ConfigProvider } from 'antd'
+import { GlobalStateProvider } from './state/GlobalStateContext.tsx'
 
 /**
  * main.tsx 是整个 react 应用的入口文件
@@ -14,7 +16,6 @@ import App from './App.tsx'
  * 3. 可以在这里引入全局样式文件, React.StrictMode, 以及其他全局配置
  */
 
-
 createRoot(document.getElementById('root')!).render(
   // React StrictMode 是 React 提供的一个开发工具，
   // 旨在帮助开发者发现潜在的问题并促使代码更加健壮。它不会影响生产环境的行为，只在开发模式下启用
@@ -22,7 +23,12 @@ createRoot(document.getElementById('root')!).render(
   //   <App />
   // </StrictMode>,
 
+  <GlobalStateProvider>
+    <ConfigProvider>
+      <Router>
+        <App />
+      </Router>
+    </ConfigProvider>
+  </GlobalStateProvider>
 
-  <App />
-   
 )
